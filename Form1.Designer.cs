@@ -275,6 +275,7 @@
             button19.TabIndex = 21;
             button19.Text = "del";
             button19.UseVisualStyleBackColor = true;
+            button19.Click += button19_Click;
             // 
             // btnDivide
             // 

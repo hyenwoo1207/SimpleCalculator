@@ -31,10 +31,31 @@ namespace SimpleCalculater
         private void btn9_Click(object sender, EventArgs e) => NumberButton_Click(sender, e);
         private void button3_Click(object sender, EventArgs e) => NumberButton_Click(sender, e); // btn0
 
-        // CE 버튼: 현재 항목만 지움
+        // CE 버튼: 현재 항목(마지막 숫자)만 지움
         private void button17_Click(object sender, EventArgs e)
         {
-            txtDisplay.Text = "0";
+            // 표현식에서 마지막 숫자 부분을 제거하고 0으로 대체
+            if (string.IsNullOrEmpty(txtDisplay.Text) || txtDisplay.Text == "0")
+            {
+                txtDisplay.Text = "0";
+                currentEntry = string.Empty;
+                isNewEntry = true;
+                return;
+            }
+
+            int idx = txtDisplay.Text.LastIndexOfAny(new char[] { '+', '-', 'X', '*', '/', '÷' });
+            if (idx >= 0)
+            {
+                // 남아있는 표현식(연산자 포함)에 0을 붙여 현재 항목을 0으로 만듦
+                txtDisplay.Text = txtDisplay.Text.Substring(0, idx + 1) + "0";
+            }
+            else
+            {
+                // 표현식에 연산자가 없으면 전체를 0으로
+                txtDisplay.Text = "0";
+            }
+
+            currentEntry = string.Empty;
             isNewEntry = true;
         }
 
@@ -267,9 +288,9 @@ namespace SimpleCalculater
             }
 
             if (!string.IsNullOrEmpty(txtDisplay.Text) && !EndsWithOperator(txtDisplay.Text))
-                txtDisplay.Text += "/";
+                txtDisplay.Text += "÷";
             else if (EndsWithOperator(txtDisplay.Text))
-                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1) + "/";
+                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1) + "÷";
 
             currentOperator = Operators.Divide;
             currentEntry = string.Empty;
@@ -328,10 +349,66 @@ namespace SimpleCalculater
         // C 버튼
         private void btnClear_Click(object sender, EventArgs e)
         {
+            // 전체 초기화
             txtDisplay.Text = "0";
+            textBox3.Text = string.Empty;
             firstOperand = 0;
             currentOperator = Operators.None;
+            currentEntry = string.Empty;
             isNewEntry = true;
+        }
+
+        // DEL 버튼: 마지막 입력 문자(현재 항목의 마지막 문자 또는 연산자)를 삭제
+        private void button19_Click(object sender, EventArgs e)
+        {
+            // 우선 현재 입력 항목이 있으면 그 항목에서 한 글자 삭제
+            if (!string.IsNullOrEmpty(currentEntry))
+            {
+                if (currentEntry.Length > 1)
+                {
+                    currentEntry = currentEntry.Substring(0, currentEntry.Length - 1);
+                    txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1);
+                }
+                else
+                {
+                    // currentEntry 한 글자만 남아있으면 삭제하면 0으로 대체
+                    currentEntry = string.Empty;
+                    if (!string.IsNullOrEmpty(txtDisplay.Text))
+                    {
+                        txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1);
+                        if (string.IsNullOrEmpty(txtDisplay.Text) || EndsWithOperator(txtDisplay.Text) == false && txtDisplay.Text.Length == 0)
+                            txtDisplay.Text = "0";
+                    }
+                    else
+                    {
+                        txtDisplay.Text = "0";
+                    }
+                }
+
+                isNewEntry = string.IsNullOrEmpty(currentEntry);
+                return;
+            }
+
+            // currentEntry가 비어있으면 표현식 끝의 연산자 또는 숫자 삭제
+            if (!string.IsNullOrEmpty(txtDisplay.Text))
+            {
+                // 마지막이 연산자면 연산자만 제거
+                if (EndsWithOperator(txtDisplay.Text))
+                {
+                    txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1);
+                    currentOperator = Operators.None;
+                }
+                else
+                {
+                    // 마지막 숫자를 하나 제거
+                    if (txtDisplay.Text.Length > 1)
+                        txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1);
+                    else
+                        txtDisplay.Text = "0";
+                }
+            }
+
+            isNewEntry = txtDisplay.Text == "0";
         }
 
         // . 버튼
@@ -360,7 +437,7 @@ namespace SimpleCalculater
         {
             if (string.IsNullOrEmpty(expr))
                 return string.Empty;
-            int idx = expr.LastIndexOfAny(new char[] { '+', '-', 'X', '*', '/' });
+            int idx = expr.LastIndexOfAny(new char[] { '+', '-', 'X', '*', '/', '÷' });
             if (idx >= 0 && idx < expr.Length - 1)
                 return expr.Substring(idx + 1);
             return expr;
@@ -371,7 +448,7 @@ namespace SimpleCalculater
             if (string.IsNullOrEmpty(expr))
                 return false;
             char last = expr[expr.Length - 1];
-            return last == '+' || last == '-' || last == 'X' || last == '*' || last == '/';
+            return last == '+' || last == '-' || last == 'X' || last == '*' || last == '/' || last == '÷';
         }
 
         private void btnMultiply_Click_1(object sender, EventArgs e)
