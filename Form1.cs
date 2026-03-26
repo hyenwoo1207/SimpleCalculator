@@ -132,24 +132,147 @@ namespace SimpleCalculater
         // - 버튼
         private void btnMinus_Click(object sender, EventArgs e)
         {
-            firstOperand = Convert.ToDouble(txtDisplay.Text);
+            // 현재 입력 숫자를 파싱
+            double value = 0;
+            if (!double.TryParse(currentEntry, out value))
+            {
+                string last = GetLastNumberFromExpression(txtDisplay.Text);
+                double.TryParse(last, out value);
+            }
+
+            if (currentOperator == Operators.None)
+            {
+                firstOperand = value;
+            }
+            else
+            {
+                switch (currentOperator)
+                {
+                    case Operators.Add:
+                        firstOperand = firstOperand + value;
+                        break;
+                    case Operators.Subtract:
+                        firstOperand = firstOperand - value;
+                        break;
+                    case Operators.Multiply:
+                        firstOperand = firstOperand * value;
+                        break;
+                    case Operators.Divide:
+                        if (value == 0)
+                        {
+                            MessageBox.Show("0으로 나눌 수 없습니다.");
+                            return;
+                        }
+                        firstOperand = firstOperand / value;
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(txtDisplay.Text) && !EndsWithOperator(txtDisplay.Text))
+                txtDisplay.Text += "-";
+            else if (EndsWithOperator(txtDisplay.Text))
+                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1) + "-";
+
             currentOperator = Operators.Subtract;
+            currentEntry = string.Empty;
             isNewEntry = true;
         }
 
         // * 버튼
         private void btnMultiply_Click(object sender, EventArgs e)
         {
-            firstOperand = Convert.ToDouble(txtDisplay.Text);
+            // 현재 입력 숫자를 파싱
+            double value = 0;
+            if (!double.TryParse(currentEntry, out value))
+            {
+                string last = GetLastNumberFromExpression(txtDisplay.Text);
+                double.TryParse(last, out value);
+            }
+
+            if (currentOperator == Operators.None)
+            {
+                firstOperand = value;
+            }
+            else
+            {
+                switch (currentOperator)
+                {
+                    case Operators.Add:
+                        firstOperand = firstOperand + value;
+                        break;
+                    case Operators.Subtract:
+                        firstOperand = firstOperand - value;
+                        break;
+                    case Operators.Multiply:
+                        firstOperand = firstOperand * value;
+                        break;
+                    case Operators.Divide:
+                        if (value == 0)
+                        {
+                            MessageBox.Show("0으로 나눌 수 없습니다.");
+                            return;
+                        }
+                        firstOperand = firstOperand / value;
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(txtDisplay.Text) && !EndsWithOperator(txtDisplay.Text))
+                txtDisplay.Text += "X";
+            else if (EndsWithOperator(txtDisplay.Text))
+                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1) + "X";
+
             currentOperator = Operators.Multiply;
+            currentEntry = string.Empty;
             isNewEntry = true;
         }
 
         // / 버튼
         private void btnDivide_Click(object sender, EventArgs e)
         {
-            firstOperand = Convert.ToDouble(txtDisplay.Text);
+            // 현재 입력 숫자를 파싱
+            double value = 0;
+            if (!double.TryParse(currentEntry, out value))
+            {
+                string last = GetLastNumberFromExpression(txtDisplay.Text);
+                double.TryParse(last, out value);
+            }
+
+            if (currentOperator == Operators.None)
+            {
+                firstOperand = value;
+            }
+            else
+            {
+                switch (currentOperator)
+                {
+                    case Operators.Add:
+                        firstOperand = firstOperand + value;
+                        break;
+                    case Operators.Subtract:
+                        firstOperand = firstOperand - value;
+                        break;
+                    case Operators.Multiply:
+                        firstOperand = firstOperand * value;
+                        break;
+                    case Operators.Divide:
+                        if (value == 0)
+                        {
+                            MessageBox.Show("0으로 나눌 수 없습니다.");
+                            return;
+                        }
+                        firstOperand = firstOperand / value;
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(txtDisplay.Text) && !EndsWithOperator(txtDisplay.Text))
+                txtDisplay.Text += "/";
+            else if (EndsWithOperator(txtDisplay.Text))
+                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1) + "/";
+
             currentOperator = Operators.Divide;
+            currentEntry = string.Empty;
             isNewEntry = true;
         }
 
