@@ -232,6 +232,7 @@
             btnMinus.TabIndex = 17;
             btnMinus.Text = "-";
             btnMinus.UseVisualStyleBackColor = true;
+            btnMinus.Click += btnMinus_Click;
             // 
             // btnMultiply
             // 
@@ -322,6 +323,7 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(269, 279);
             panel1.TabIndex = 24;
+            panel1.Paint += panel1_Paint;
             // 
             // Form1
             // 

@@ -376,7 +376,8 @@ namespace SimpleCalculater
 
         private void btnMultiply_Click_1(object sender, EventArgs e)
         {
-
+            // Designer wired to this method; forward to main handler
+            btnMultiply_Click(sender, e);
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -385,6 +386,12 @@ namespace SimpleCalculater
         }
 
         private void btnDivide_Click_1(object sender, EventArgs e)
+        {
+            // Designer wired to this method; forward to main handler
+            btnDivide_Click(sender, e);
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
