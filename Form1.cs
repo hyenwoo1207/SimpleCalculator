@@ -14,10 +14,10 @@ namespace SimpleCalculater
             Divide
         }
 
-        // Designer에서 참조하는 누락된 이벤트 핸들러들
+
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            // 의도적으로 비워둠(디자이너 이벤트 연결용)
+
         }
 
         private void btn1_Click(object sender, EventArgs e) => NumberButton_Click(sender, e);
@@ -41,6 +41,8 @@ namespace SimpleCalculater
         Operators currentOperator = Operators.None;
         double firstOperand = 0;
         bool isNewEntry = true;
+        // 현재 입력 중인 숫자(표현식의 마지막 숫자)
+        string currentEntry = string.Empty;
 
         public Form1()
         {
@@ -53,22 +55,77 @@ namespace SimpleCalculater
         {
             Button btn = (Button)sender;
 
-            if (txtDisplay.Text == "0" || isNewEntry)
+            // 숫자 입력을 currentEntry와 표현식(txtDisplay)에 반영
+            if (isNewEntry)
             {
-                txtDisplay.Text = btn.Text;
+                currentEntry = btn.Text;
+                if (txtDisplay.Text == "0")
+                    txtDisplay.Text = btn.Text;
+                else
+                    txtDisplay.Text += btn.Text;
                 isNewEntry = false;
             }
             else
             {
-                txtDisplay.Text += btn.Text;
+                currentEntry += btn.Text;
+                if (txtDisplay.Text == "0")
+                    txtDisplay.Text = btn.Text;
+                else
+                    txtDisplay.Text += btn.Text;
             }
         }
 
         // + 버튼
         private void btnPlus_Click(object sender, EventArgs e)
         {
-            firstOperand = Convert.ToDouble(txtDisplay.Text);
+            // 현재 입력 숫자를 파싱
+            double value = 0;
+            if (!double.TryParse(currentEntry, out value))
+            {
+                // 표현식에서 마지막 숫자 추출
+                string last = GetLastNumberFromExpression(txtDisplay.Text);
+                double.TryParse(last, out value);
+            }
+
+            if (currentOperator == Operators.None)
+            {
+                firstOperand = value;
+            }
+            else
+            {
+                // 연속 연산 지원(이전 연산 적용)
+                switch (currentOperator)
+                {
+                    case Operators.Add:
+                        firstOperand = firstOperand + value;
+                        break;
+                    case Operators.Subtract:
+                        firstOperand = firstOperand - value;
+                        break;
+                    case Operators.Multiply:
+                        firstOperand = firstOperand * value;
+                        break;
+                    case Operators.Divide:
+                        if (value == 0)
+                        {
+                            MessageBox.Show("0으로 나눌 수 없습니다.");
+                            return;
+                        }
+                        firstOperand = firstOperand / value;
+                        break;
+                }
+            }
+
+            // 표현식에 연산자 추가(중복 연산자 방지)
+            if (!string.IsNullOrEmpty(txtDisplay.Text) && !EndsWithOperator(txtDisplay.Text))
+                txtDisplay.Text += "+";
+            else if (EndsWithOperator(txtDisplay.Text))
+            {
+                txtDisplay.Text = txtDisplay.Text.Substring(0, txtDisplay.Text.Length - 1) + "+";
+            }
+
             currentOperator = Operators.Add;
+            currentEntry = string.Empty;
             isNewEntry = true;
         }
 
@@ -99,9 +156,15 @@ namespace SimpleCalculater
         // = 버튼
         private void btnEqual_Click(object sender, EventArgs e)
         {
-            double secondOperand = Convert.ToDouble(txtDisplay.Text);
-            double result = 0;
+            // 현재 입력 숫자 또는 표현식의 마지막 숫자 가져오기
+            double secondOperand = 0;
+            if (!double.TryParse(currentEntry, out secondOperand))
+            {
+                string last = GetLastNumberFromExpression(txtDisplay.Text);
+                double.TryParse(last, out secondOperand);
+            }
 
+            double result = 0;
             switch (currentOperator)
             {
                 case Operators.Add:
@@ -130,9 +193,13 @@ namespace SimpleCalculater
                     break;
             }
 
-            txtDisplay.Text = result.ToString();
+            // 계산 결과는 textBox3에 표시
+            textBox3.Text = result.ToString();
+
+            // 상태 초기화(계산 결과를 다음 입력의 시작값으로 사용 가능)
             isNewEntry = true;
             currentOperator = Operators.None;
+            currentEntry = result.ToString();
         }
 
         // C 버튼
@@ -149,15 +216,54 @@ namespace SimpleCalculater
         {
             if (isNewEntry)
             {
-                txtDisplay.Text = "0.";
+                currentEntry = "0.";
+                if (txtDisplay.Text == "0")
+                    txtDisplay.Text = currentEntry;
+                else
+                    txtDisplay.Text += currentEntry;
                 isNewEntry = false;
                 return;
             }
 
-            if (!txtDisplay.Text.Contains("."))
+            if (!currentEntry.Contains("."))
             {
+                currentEntry += ".";
                 txtDisplay.Text += ".";
             }
+        }
+
+        // 표현식의 마지막 숫자를 추출하는 유틸
+        private string GetLastNumberFromExpression(string expr)
+        {
+            if (string.IsNullOrEmpty(expr))
+                return string.Empty;
+            int idx = expr.LastIndexOfAny(new char[] { '+', '-', 'X', '*', '/' });
+            if (idx >= 0 && idx < expr.Length - 1)
+                return expr.Substring(idx + 1);
+            return expr;
+        }
+
+        private bool EndsWithOperator(string expr)
+        {
+            if (string.IsNullOrEmpty(expr))
+                return false;
+            char last = expr[expr.Length - 1];
+            return last == '+' || last == '-' || last == 'X' || last == '*' || last == '/';
+        }
+
+        private void btnMultiply_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDivide_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

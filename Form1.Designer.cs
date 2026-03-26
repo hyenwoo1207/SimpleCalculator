@@ -69,6 +69,7 @@
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(270, 27);
             textBox3.TabIndex = 2;
+            textBox3.TextChanged += textBox3_TextChanged;
             // 
             // button1
             // 
@@ -241,6 +242,7 @@
             btnMultiply.TabIndex = 18;
             btnMultiply.Text = "X";
             btnMultiply.UseVisualStyleBackColor = true;
+            btnMultiply.Click += btnMultiply_Click_1;
             // 
             // button17
             // 
@@ -280,8 +282,9 @@
             btnDivide.Name = "btnDivide";
             btnDivide.Size = new Size(61, 50);
             btnDivide.TabIndex = 22;
-            btnDivide.Text = "/";
+            btnDivide.Text = "÷";
             btnDivide.UseVisualStyleBackColor = true;
+            btnDivide.Click += btnDivide_Click_1;
             // 
             // label1
             // 
